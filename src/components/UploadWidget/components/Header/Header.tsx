@@ -1,5 +1,6 @@
 import * as Collapsable from '@radix-ui/react-collapsible'
 import { LuMinimize2 } from 'react-icons/lu'
+import { Title } from '../Title/Title'
 
 const stylesheet = {
   container:
@@ -11,7 +12,7 @@ const stylesheet = {
 export function Header() {
   return (
     <div className={stylesheet.container}>
-      <span>Upload files</span>
+      <Title />
       <Collapsable.Trigger className={stylesheet.button}>
         <LuMinimize2 />
       </Collapsable.Trigger>

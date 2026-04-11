@@ -1,5 +1,6 @@
 import * as Collapsible from '@radix-ui/react-collapsible'
 import { LuMaximize2 } from 'react-icons/lu'
+import { Title } from '../Title/Title'
 
 const stylesheet = {
   trigger:
@@ -10,7 +11,7 @@ const stylesheet = {
 export function MinimizedButton() {
   return (
     <Collapsible.Trigger className={stylesheet.trigger}>
-      <span>Upload files</span>
+      <Title />
       <LuMaximize2 className={stylesheet.icon} />
     </Collapsible.Trigger>
   )
