@@ -2,13 +2,11 @@ import { LuImageUp } from 'react-icons/lu'
 import { Button } from '../../../ui/Button/Button'
 import { useUploadItem } from './hooks/useUploadItem'
 import * as Progress from '@radix-ui/react-progress'
+import type { Upload } from '../../../../store/uploads'
+import { formatBytes } from '../../../../utils/formatBytes'
 
 interface UploadItemProps {
-  fileName: string
-  fileSize: string
-  compressedSize: string
-  compressionRatio: string
-  progress: string
+  upload: Upload
 }
 
 const stylesheet = {
@@ -27,13 +25,7 @@ const stylesheet = {
   infoContainer: 'gap-1 flex flex-col',
 }
 
-export function UploadItem({
-  fileName,
-  fileSize,
-  compressedSize,
-  compressionRatio,
-  progress,
-}: UploadItemProps) {
+export function UploadItem({ upload }: UploadItemProps) {
   const { buttonsData } = useUploadItem()
 
   return (
@@ -41,24 +33,26 @@ export function UploadItem({
       <div className={stylesheet.infoContainer}>
         <div className={stylesheet.fileName}>
           <LuImageUp className={stylesheet.icon} />
-          <span>{fileName}</span>
+          <span>{upload.name}</span>
         </div>
         <span className={stylesheet.fileDescription}>
-          <span className={stylesheet.fileSize}>{fileSize}</span>
-          <div className={stylesheet.dot} />
-          <span>
-            {compressedSize}
-            <span className={stylesheet.progressRatio}>{compressionRatio}</span>
+          <span className={stylesheet.fileSize}>
+            {formatBytes(upload.file.size)}
           </span>
           <div className={stylesheet.dot} />
-          <span>{progress}</span>
+          <span>
+            {12}
+            <span className={stylesheet.progressRatio}>{156}</span>
+          </span>
+          <div className={stylesheet.dot} />
+          <span>{12}</span>
         </span>
       </div>
 
       <Progress.Root className={stylesheet.progress}>
         <Progress.Indicator
           className={stylesheet.progressFill}
-          style={{ width: progress }}
+          style={{ width: 16 }}
         />
       </Progress.Root>
 

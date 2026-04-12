@@ -30,7 +30,7 @@ const ANIMATION_VARIANTS = {
 } as Variants
 
 export function UploadWidget() {
-  const isThereAnyPendingUpload = true
+  const isThereAnyPendingUpload = false
 
   const { isOpen, handleIsOpenChange } = useUploadWidget()
 

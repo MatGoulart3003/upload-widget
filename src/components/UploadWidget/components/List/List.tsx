@@ -1,4 +1,5 @@
 import { motion, type Variants } from 'motion/react'
+import { useUploads } from '../../../../store/uploads'
 import { UploadItem } from '../UploadItem/UploadItem'
 
 const stylesheet = {
@@ -13,7 +14,9 @@ const ANIMATION_VARIANTS = {
 } as Variants
 
 export function List() {
-  const isUploadListEmpty = false
+  const uploads = useUploads(store => store.uploads)
+
+  const isUploadListEmpty = uploads.size === 0
 
   const renderUploadListContent = () => {
     if (isUploadListEmpty) {
@@ -22,27 +25,9 @@ export function List() {
 
     return (
       <div className={stylesheet.listMap}>
-        <UploadItem
-          fileName="image1.jpg"
-          fileSize="1.2 MB"
-          compressedSize="800 KB"
-          compressionRatio="66.7%"
-          progress="20%"
-        />
-        <UploadItem
-          fileName="image2.png"
-          fileSize="2.5 MB"
-          compressedSize="1.1 MB"
-          compressionRatio="44.0%"
-          progress="90%"
-        />
-        <UploadItem
-          fileName="image3.gif"
-          fileSize="3.0 MB"
-          compressedSize="1.8 MB"
-          compressionRatio="60.0%"
-          progress="50%"
-        />
+        {Array.from(uploads.entries()).map(([uploadId, upload]) => (
+          <UploadItem key={uploadId} upload={upload} />
+        ))}
       </div>
     )
   }
