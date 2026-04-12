@@ -7,4 +7,20 @@
 
   --text-xxs: 0.625rem;
   --text-xxs--line-height: calc(1 / 0.625);
+
+  --opacity-2: 0.02;
+
+  --animate-border: border 2s linear infinite;
+
+  @keyframes border {
+    to {
+      --border-angle: 360deg;
+    }
+  }
+}
+
+@property --border-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: "<angle>";
 }

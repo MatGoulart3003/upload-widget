@@ -1,5 +1,6 @@
 import { useDropzone } from 'react-dropzone'
 import CircularProgressBar from '../../../ui/CircularProgressBar/CircularProgressBar'
+import { motion, type Variants } from 'motion/react'
 
 const stylesheet = {
   container: 'px-3 flex flex-col gap-3',
@@ -10,6 +11,11 @@ const stylesheet = {
   supportedFilesSpan: 'text-xs text-zinc-400',
   circularProgressContainer: 'flex flex-col items-center gap-2.5',
 }
+
+const ANIMATION_VARIANTS = {
+  open: { opacity: 1, transition: { duration: 0.5 } },
+  closed: { opacity: 0 },
+} as Variants
 
 export function Dropzone() {
   const isThereAnyPendingUpload = true
@@ -51,7 +57,12 @@ export function Dropzone() {
     )
   }
   return (
-    <div className={stylesheet.container}>
+    <motion.div
+      initial={'closed'}
+      animate={'open'}
+      variants={ANIMATION_VARIANTS}
+      className={stylesheet.container}
+    >
       <div
         data-active={isDragActive}
         className={stylesheet.dropZone}
@@ -63,6 +74,6 @@ export function Dropzone() {
       <span className={stylesheet.supportedFilesSpan}>
         Only PNG and JPG files are supported.
       </span>
-    </div>
+    </motion.div>
   )
 }

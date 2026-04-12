@@ -1,3 +1,4 @@
+import { motion, type Variants } from 'motion/react'
 import { UploadItem } from '../UploadItem/UploadItem'
 
 const stylesheet = {
@@ -5,6 +6,11 @@ const stylesheet = {
   noUploadsSpan: 'text-sm text-zinc-400',
   listMap: 'flex flex-col gap-2',
 }
+
+const ANIMATION_VARIANTS = {
+  open: { opacity: 1, transition: { duration: 0.5 } },
+  closed: { opacity: 0 },
+} as Variants
 
 export function List() {
   const isUploadListEmpty = false
@@ -42,11 +48,16 @@ export function List() {
   }
 
   return (
-    <div className={stylesheet.container}>
+    <motion.div
+      initial={'closed'}
+      animate={'open'}
+      variants={ANIMATION_VARIANTS}
+      className={stylesheet.container}
+    >
       <span>
         Uploaded files <span>{3}</span>
       </span>
       {renderUploadListContent()}
-    </div>
+    </motion.div>
   )
 }
