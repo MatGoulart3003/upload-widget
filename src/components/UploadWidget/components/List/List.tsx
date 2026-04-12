@@ -2,15 +2,20 @@ import { UploadItem } from '../UploadItem/UploadItem'
 
 const stylesheet = {
   container: 'px-3 flex flex-col gap-3',
+  noUploadsSpan: 'text-sm text-zinc-400',
+  listMap: 'flex flex-col gap-2',
 }
 
 export function List() {
-  return (
-    <div className={stylesheet.container}>
-      <span>
-        Uploaded files <span>{3}</span>
-      </span>
-      <div className="flex flex-col gap-2">
+  const isUploadListEmpty = false
+
+  const renderUploadListContent = () => {
+    if (isUploadListEmpty) {
+      return <span className={stylesheet.noUploadsSpan}>No uploads added</span>
+    }
+
+    return (
+      <div className={stylesheet.listMap}>
         <UploadItem
           fileName="image1.jpg"
           fileSize="1.2 MB"
@@ -33,6 +38,15 @@ export function List() {
           progress="50%"
         />
       </div>
+    )
+  }
+
+  return (
+    <div className={stylesheet.container}>
+      <span>
+        Uploaded files <span>{3}</span>
+      </span>
+      {renderUploadListContent()}
     </div>
   )
 }

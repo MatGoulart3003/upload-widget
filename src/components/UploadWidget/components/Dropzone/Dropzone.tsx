@@ -1,4 +1,5 @@
 import { useDropzone } from 'react-dropzone'
+import CircularProgressBar from '../../../ui/CircularProgressBar/CircularProgressBar'
 
 const stylesheet = {
   container: 'px-3 flex flex-col gap-3',
@@ -7,9 +8,13 @@ const stylesheet = {
   dropFilesSpan: 'text-xs',
   clickToOpenSpan: 'text-sm underline',
   supportedFilesSpan: 'text-xs text-zinc-400',
+  circularProgressContainer: 'flex flex-col items-center gap-2.5',
 }
 
 export function Dropzone() {
+  const isThereAnyPendingUpload = true
+  const uploadGlobalPercentage = 70
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: true,
     accept: {
@@ -22,6 +27,29 @@ export function Dropzone() {
     },
   })
 
+  const renderDropZoneContent = () => {
+    if (isThereAnyPendingUpload) {
+      return (
+        <div className={stylesheet.circularProgressContainer}>
+          <CircularProgressBar
+            progress={uploadGlobalPercentage}
+            size={56}
+            strokeWidth={4}
+          />
+          <span className="text-xs">Uploading 2 files...</span>
+        </div>
+      )
+    }
+    return (
+      <>
+        <span className={stylesheet.dropFilesSpan}>
+          Drop the files here ...
+        </span>
+
+        <span className={stylesheet.clickToOpenSpan}>Click to open picker</span>
+      </>
+    )
+  }
   return (
     <div className={stylesheet.container}>
       <div
@@ -30,12 +58,7 @@ export function Dropzone() {
         {...getRootProps()}
       >
         <input type="file" {...getInputProps()} />
-
-        <span className={stylesheet.dropFilesSpan}>
-          Drop the files here ...
-        </span>
-
-        <span className={stylesheet.clickToOpenSpan}>Click to open picker</span>
+        {renderDropZoneContent()}
       </div>
       <span className={stylesheet.supportedFilesSpan}>
         Only PNG and JPG files are supported.
