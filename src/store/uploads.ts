@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer'
 import { useShallow } from 'zustand/shallow'
 import { uploadFileToStorage } from '../service/uploadFIleToStorage.service'
 import { calculateProgress } from '../utils/calculateProgress'
+import { compressImage } from '../utils/compressImage'
 
 export enum UploadStatus {
   PROGRESS = 'progress',
@@ -20,6 +21,8 @@ export interface Upload {
   status: UploadStatus
   originalSizeIBytes: number
   uploadSizeInBytes: number
+  compressedSizeInBytes?: number
+  remoteUrl?: string
 }
 
 type UploadState = {
@@ -43,12 +46,23 @@ export const useUploads = create<UploadState, [['zustand/immer', never]]>(
     async function processUpload(uploadId: string) {
       const upload = get().uploads.get(uploadId)
 
-      if (!upload) return
+      if (!upload) {
+        return
+      }
 
       try {
-        await uploadFileToStorage(
+        const compressedFile = await compressImage({
+          file: upload.file,
+          maxHeight: 1000,
+          maxWidth: 1000,
+          quality: 0.8,
+        })
+
+        updateUpload(uploadId, { compressedSizeInBytes: compressedFile.size })
+
+        const { url } = await uploadFileToStorage(
           {
-            file: upload.file,
+            file: compressedFile,
             onProgress(sizeInBytes) {
               updateUpload(uploadId, { uploadSizeInBytes: sizeInBytes })
             },
@@ -56,7 +70,7 @@ export const useUploads = create<UploadState, [['zustand/immer', never]]>(
           { signal: upload.abortController.signal },
         )
 
-        updateUpload(uploadId, { status: UploadStatus.SUCCESS })
+        updateUpload(uploadId, { status: UploadStatus.SUCCESS, remoteUrl: url })
       } catch (error) {
         if (error instanceof CanceledError) {
           return
@@ -124,8 +138,11 @@ export const usePendingUploads = () => {
 
       const { total, uploaded } = uploadValues.reduce(
         (acc, upload) => {
-          acc.total += upload.originalSizeIBytes
-          acc.uploaded += upload.uploadSizeInBytes
+          if (upload.compressedSizeInBytes) {
+            acc.uploaded += upload.uploadSizeInBytes
+          }
+          acc.total += upload.compressedSizeInBytes || upload.originalSizeIBytes
+
           return acc
         },
         {

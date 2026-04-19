@@ -18,14 +18,16 @@ export function useUploadItem(uploadWithId: UploadWithId) {
       ariaLabel: 'Download compressed image',
       isDisplayed: true,
       onClick: undefined,
+      href: uploadWithId.remoteUrl,
       isDisabled: uploadWithId.status !== UploadStatus.SUCCESS,
     },
     {
       icon: IoMdLink,
       ariaLabel: 'Copy remote url',
       isDisplayed: true,
-      onClick: undefined,
-      isDisabled: uploadWithId.status !== UploadStatus.SUCCESS,
+      onClick: () =>
+        navigator.clipboard.writeText(uploadWithId.remoteUrl ?? ''),
+      isDisabled: !uploadWithId.remoteUrl,
     },
     {
       icon: FiRefreshCcw,
@@ -73,7 +75,7 @@ export function useUploadItem(uploadWithId: UploadWithId) {
 
   const progress = calculateProgress(
     uploadWithId.uploadSizeInBytes,
-    uploadWithId.originalSizeIBytes,
+    uploadWithId.compressedSizeInBytes,
   )
 
   return { buttonsData, UPLOAD_STATUS_DISPLAY, progress }

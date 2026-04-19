@@ -13,7 +13,7 @@ interface UploadItemProps {
 
 const stylesheet = {
   container:
-    'p-3 rounded-lg flex flex-col gap-3 shadows-shape-content bg-white/2 relative overflow-hidden min-h-[76px]',
+    'p-3 border border-zinc-800 rounded-lg flex flex-col gap-3 shadows-shape-content bg-white/3 relative overflow-hidden min-h-[76px]',
   fileName: 'text-xs font-medium flex items-center gap-1',
   fileNameSpan: 'max-w-[180px] truncate',
   icon: 'text-zinc-300',
@@ -65,8 +65,18 @@ export function UploadItem({ upload, uploadId }: UploadItemProps) {
           </span>
           <div className={stylesheet.dot} />
           <span>
-            {12}
-            <span className={stylesheet.progressRatio}>{progress}%</span>
+            {formatBytes(upload.compressedSizeInBytes ?? 0)}
+            {upload.compressedSizeInBytes && (
+              <span className={stylesheet.progressRatio}>
+                -
+                {Math.round(
+                  ((upload.originalSizeIBytes - upload.compressedSizeInBytes) *
+                    100) /
+                    upload.originalSizeIBytes,
+                )}
+                %
+              </span>
+            )}
           </span>
           <div className={stylesheet.dot} />
           {renderUploadStatus()}
@@ -94,11 +104,14 @@ export function UploadItem({ upload, uploadId }: UploadItemProps) {
               key={button.ariaLabel}
               size="icon-sm"
               disabled={button.isDisabled}
+              asChild={!!button.href}
             >
-              <button.icon />
-              <span className={stylesheet.accessibilityText}>
-                {button.ariaLabel}
-              </span>
+              <a href={button.href}>
+                <button.icon />
+                <span className={stylesheet.accessibilityText}>
+                  {button.ariaLabel}
+                </span>
+              </a>
             </Button>
           ) : null,
         )}
