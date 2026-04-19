@@ -1,39 +1,101 @@
 import { enableMapSet } from 'immer'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import { uploadFileToStorage } from '../service/uploadFIleToStorage.service'
+
+export enum UploadStatus {
+  PROGRESS = 'progress',
+  SUCCESS = 'success',
+  ERROR = 'error',
+  CANCELED = 'canceled',
+}
 
 export interface Upload {
   name: string
   file: File
+  abortController: AbortController
+  status: UploadStatus
 }
 
 type UploadState = {
   uploads: Map<string, Upload>
   addUploads: (files: File[]) => void
+  cancelUpload: (uploadId: string) => void
 }
 
 enableMapSet()
 
 export const useUploads = create<UploadState, [['zustand/immer', never]]>(
-  immer(set => {
+  immer((set, get) => {
+    async function processUpload(uploadId: string) {
+      const upload = get().uploads.get(uploadId)
+
+      if (!upload) return
+
+      try {
+        await uploadFileToStorage(
+          { file: upload.file },
+          { signal: upload.abortController.signal },
+        )
+
+        set(state => {
+          state.uploads.set(uploadId, {
+            ...upload,
+            status: UploadStatus.SUCCESS,
+          })
+        })
+      } catch (error) {
+        set(state => {
+          state.uploads.set(uploadId, {
+            ...upload,
+            status: UploadStatus.ERROR,
+          })
+        })
+        console.error(error)
+      }
+    }
+
+    function cancelUpload(uploadId: string) {
+      const upload = get().uploads.get(uploadId)
+
+      if (!upload) {
+        return
+      }
+
+      upload.abortController.abort()
+
+      set(state => {
+        state.uploads.set(uploadId, {
+          ...upload,
+          status: UploadStatus.CANCELED,
+        })
+      })
+    }
+
     function addUploads(files: File[]) {
       for (const file of files) {
         const uploadId = crypto.randomUUID()
+        const abortController = new AbortController()
 
         const upload: Upload = {
           name: file.name,
           file,
+          abortController,
+          status: UploadStatus.PROGRESS,
         }
 
         set(state => {
           state.uploads.set(uploadId, upload)
         })
+
+        processUpload(uploadId)
       }
     }
 
     return {
       addUploads,
       uploads: new Map(),
+      cancelUpload,
     }
   }),
 )

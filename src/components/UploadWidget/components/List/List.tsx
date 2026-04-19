@@ -26,7 +26,7 @@ export function List() {
     return (
       <div className={stylesheet.listMap}>
         {Array.from(uploads.entries()).map(([uploadId, upload]) => (
-          <UploadItem key={uploadId} upload={upload} />
+          <UploadItem key={uploadId} upload={upload} uploadId={uploadId} />
         ))}
       </div>
     )

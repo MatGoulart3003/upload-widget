@@ -1,10 +1,10 @@
 import * as Collapsible from '@radix-ui/react-collapsible'
+import { motion, type Variants } from 'motion/react'
 import { Dropzone } from './components/Dropzone/Dropzone'
 import { Header } from './components/Header/Header'
 import { List } from './components/List/List'
-import { useUploadWidget } from './hooks/useUploadWidget'
 import { MinimizedButton } from './components/MinimizedButton/MinimizedButton'
-import { motion, type Variants } from 'motion/react'
+import { useUploadWidget } from './hooks/useUploadWidget'
 
 const stylesheet = {
   container:

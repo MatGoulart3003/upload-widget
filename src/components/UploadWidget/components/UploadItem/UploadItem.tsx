@@ -1,18 +1,21 @@
+import * as Progress from '@radix-ui/react-progress'
 import { LuImageUp } from 'react-icons/lu'
+import { Tooltip } from 'react-tooltip'
+import { type Upload, UploadStatus } from '../../../../store/uploads'
+import { formatBytes } from '../../../../utils/formatBytes'
 import { Button } from '../../../ui/Button/Button'
 import { useUploadItem } from './hooks/useUploadItem'
-import * as Progress from '@radix-ui/react-progress'
-import type { Upload } from '../../../../store/uploads'
-import { formatBytes } from '../../../../utils/formatBytes'
 
 interface UploadItemProps {
   upload: Upload
+  uploadId: string
 }
 
 const stylesheet = {
   container:
     'p-3 rounded-lg flex flex-col gap-3 shadows-shape-content bg-white/2 relative overflow-hidden',
   fileName: 'text-xs font-medium flex items-center gap-1',
+  fileNameSpan: 'max-w-[180px] truncate',
   icon: 'text-zinc-300',
   fileDescription: 'text-xxs text-zinc-400 flex gap-1.5 items-center',
   dot: 'size-1 rounded-full bg-zinc-700',
@@ -20,20 +23,41 @@ const stylesheet = {
   buttonsSection: 'absolute top-2.5 right-2.5 flex items-center gap-1',
   progressRatio: 'text-green-400 ml-1',
   accessibilityText: 'sr-only',
-  progress: 'bg-zinc-800 rounded-full h-1 overflow-hidden',
-  progressFill: 'bg-indigo-500 h-1',
+  progress: 'group bg-zinc-800 rounded-full h-1 overflow-hidden',
+  progressFill:
+    'bg-indigo-500 h-1 group-data-[status=success]:bg-green-400 group-data-[status=error]:bg-red-400 group-data-[status=canceled]:bg-amber-500',
   infoContainer: 'gap-1 flex flex-col',
 }
 
-export function UploadItem({ upload }: UploadItemProps) {
-  const { buttonsData } = useUploadItem()
+export function UploadItem({ upload, uploadId }: UploadItemProps) {
+  const { buttonsData, UPLOAD_STATUS_DISPLAY } = useUploadItem({
+    ...upload,
+    uploadId,
+  })
+
+  function renderUploadStatus() {
+    const resolver = UPLOAD_STATUS_DISPLAY[upload.status]
+    if (!resolver) {
+      return null
+    }
+
+    const { label, className } = resolver(upload)
+    return <span className={className}>{label}</span>
+  }
 
   return (
     <div className={stylesheet.container}>
       <div className={stylesheet.infoContainer}>
         <div className={stylesheet.fileName}>
           <LuImageUp className={stylesheet.icon} />
-          <span>{upload.name}</span>
+          <Tooltip id="my-tooltip" />
+          <span
+            data-tooltip-id="my-tooltip"
+            data-tooltip-content={upload.name}
+            className={stylesheet.fileNameSpan}
+          >
+            {upload.name}
+          </span>
         </div>
         <span className={stylesheet.fileDescription}>
           <span className={stylesheet.fileSize}>
@@ -42,24 +66,34 @@ export function UploadItem({ upload }: UploadItemProps) {
           <div className={stylesheet.dot} />
           <span>
             {12}
-            <span className={stylesheet.progressRatio}>{156}</span>
+            <span className={stylesheet.progressRatio}>95%</span>
           </span>
           <div className={stylesheet.dot} />
-          <span>{12}</span>
+          {renderUploadStatus()}
         </span>
       </div>
 
-      <Progress.Root className={stylesheet.progress}>
+      <Progress.Root
+        data-status={upload.status}
+        className={stylesheet.progress}
+      >
         <Progress.Indicator
           className={stylesheet.progressFill}
-          style={{ width: 16 }}
+          style={{
+            width: upload.status === UploadStatus.PROGRESS ? '43%' : '100%',
+          }}
         />
       </Progress.Root>
 
       <div className={stylesheet.buttonsSection}>
         {buttonsData.map(button =>
           button.isDisplayed ? (
-            <Button key={button.ariaLabel} size="icon-sm">
+            <Button
+              onClick={button.onClick}
+              key={button.ariaLabel}
+              size="icon-sm"
+              disabled={button.isDisabled}
+            >
               <button.icon />
               <span className={stylesheet.accessibilityText}>
                 {button.ariaLabel}
