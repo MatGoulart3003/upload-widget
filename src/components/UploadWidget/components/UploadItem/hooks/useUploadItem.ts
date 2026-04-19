@@ -7,8 +7,9 @@ import {
   UploadStatus,
   useUploads,
 } from '../../../../../store/uploads'
+import { calculateProgress } from '../../../../../utils/calculateProgress'
 
-export function useUploadItem(UploadWithId: UploadWithId) {
+export function useUploadItem(uploadWithId: UploadWithId) {
   const cancelUpload = useUploads(state => state.cancelUpload)
 
   const buttonsData = [
@@ -17,14 +18,14 @@ export function useUploadItem(UploadWithId: UploadWithId) {
       ariaLabel: 'Download compressed image',
       isDisplayed: true,
       onClick: undefined,
-      isDisabled: UploadWithId.status !== UploadStatus.SUCCESS,
+      isDisabled: uploadWithId.status !== UploadStatus.SUCCESS,
     },
     {
       icon: IoMdLink,
       ariaLabel: 'Copy remote url',
       isDisplayed: true,
       onClick: undefined,
-      isDisabled: UploadWithId.status !== UploadStatus.SUCCESS,
+      isDisabled: uploadWithId.status !== UploadStatus.SUCCESS,
     },
     {
       icon: FiRefreshCcw,
@@ -32,15 +33,15 @@ export function useUploadItem(UploadWithId: UploadWithId) {
       isDisplayed: true,
       onClick: undefined,
       isDisabled: ![UploadStatus.CANCELED, UploadStatus.ERROR].includes(
-        UploadWithId.status,
+        uploadWithId.status,
       ),
     },
     {
       icon: IoMdClose,
       ariaLabel: 'Cancel Upload',
       isDisplayed: true,
-      onClick: () => cancelUpload(UploadWithId.uploadId),
-      isDisabled: UploadWithId.status !== UploadStatus.PROGRESS,
+      onClick: () => cancelUpload(uploadWithId.uploadId),
+      isDisabled: uploadWithId.status !== UploadStatus.PROGRESS,
     },
   ]
 
@@ -70,5 +71,10 @@ export function useUploadItem(UploadWithId: UploadWithId) {
     }),
   }
 
-  return { buttonsData, UPLOAD_STATUS_DISPLAY }
+  const progress = calculateProgress(
+    uploadWithId.uploadSizeInBytes,
+    uploadWithId.originalSizeIBytes,
+  )
+
+  return { buttonsData, UPLOAD_STATUS_DISPLAY, progress }
 }

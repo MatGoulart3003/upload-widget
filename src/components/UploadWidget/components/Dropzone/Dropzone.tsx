@@ -1,7 +1,7 @@
-import { useDropzone } from 'react-dropzone'
-import CircularProgressBar from '../../../ui/CircularProgressBar/CircularProgressBar'
 import { motion, type Variants } from 'motion/react'
-import { useUploads } from '../../../../store/uploads'
+import { useDropzone } from 'react-dropzone'
+import { usePendingUploads, useUploads } from '../../../../store/uploads'
+import CircularProgressBar from '../../../ui/CircularProgressBar/CircularProgressBar'
 
 const stylesheet = {
   container: 'px-3 flex flex-col gap-3',
@@ -19,10 +19,9 @@ const ANIMATION_VARIANTS = {
 } as Variants
 
 export function Dropzone() {
-  const { addUploads } = useUploads()
-
-  const isThereAnyPendingUpload = false
-  const uploadGlobalPercentage = 70
+  const uploadsSize = useUploads(store => store.uploads.size)
+  const addUploads = useUploads(store => store.addUploads)
+  const { isThereAnyPendingUploads, globalPercentage } = usePendingUploads()
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: true,
@@ -37,15 +36,15 @@ export function Dropzone() {
   })
 
   const renderDropZoneContent = () => {
-    if (isThereAnyPendingUpload) {
+    if (isThereAnyPendingUploads) {
       return (
         <div className={stylesheet.circularProgressContainer}>
           <CircularProgressBar
-            progress={uploadGlobalPercentage}
+            progress={globalPercentage}
             size={56}
             strokeWidth={4}
           />
-          <span className="text-xs">Uploading 2 files...</span>
+          <span className="text-xs">Uploading {uploadsSize} files...</span>
         </div>
       )
     }

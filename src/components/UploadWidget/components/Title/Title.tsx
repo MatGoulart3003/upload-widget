@@ -1,4 +1,5 @@
 import { FiUploadCloud } from 'react-icons/fi'
+import { usePendingUploads } from '../../../../store/uploads'
 
 const stylesheet = {
   container: 'flex items-center gap-1.5 text-sm font-medium',
@@ -8,17 +9,14 @@ const stylesheet = {
 }
 
 export function Title() {
-  const isThereAnyPendingUpload = true
-  const uploadGlobalPercentage = 51
+  const { isThereAnyPendingUploads, globalPercentage } = usePendingUploads()
 
   const renderTitleContent = () => {
-    if (isThereAnyPendingUpload) {
+    if (isThereAnyPendingUploads) {
       return (
         <span className={stylesheet.uploadingTitle}>
           Uploading
-          <span className={stylesheet.percentage}>
-            {uploadGlobalPercentage}%
-          </span>
+          <span className={stylesheet.percentage}>{globalPercentage}%</span>
         </span>
       )
     }

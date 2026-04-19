@@ -13,7 +13,7 @@ interface UploadItemProps {
 
 const stylesheet = {
   container:
-    'p-3 rounded-lg flex flex-col gap-3 shadows-shape-content bg-white/2 relative overflow-hidden',
+    'p-3 rounded-lg flex flex-col gap-3 shadows-shape-content bg-white/2 relative overflow-hidden min-h-[76px]',
   fileName: 'text-xs font-medium flex items-center gap-1',
   fileNameSpan: 'max-w-[180px] truncate',
   icon: 'text-zinc-300',
@@ -25,12 +25,12 @@ const stylesheet = {
   accessibilityText: 'sr-only',
   progress: 'group bg-zinc-800 rounded-full h-1 overflow-hidden',
   progressFill:
-    'bg-indigo-500 h-1 group-data-[status=success]:bg-green-400 group-data-[status=error]:bg-red-400 group-data-[status=canceled]:bg-amber-500',
+    'bg-indigo-500 h-1 group-data-[status=success]:bg-green-400 group-data-[status=error]:bg-red-400 group-data-[status=canceled]:bg-amber-500 transition-all',
   infoContainer: 'gap-1 flex flex-col',
 }
 
 export function UploadItem({ upload, uploadId }: UploadItemProps) {
-  const { buttonsData, UPLOAD_STATUS_DISPLAY } = useUploadItem({
+  const { buttonsData, UPLOAD_STATUS_DISPLAY, progress } = useUploadItem({
     ...upload,
     uploadId,
   })
@@ -61,12 +61,12 @@ export function UploadItem({ upload, uploadId }: UploadItemProps) {
         </div>
         <span className={stylesheet.fileDescription}>
           <span className={stylesheet.fileSize}>
-            {formatBytes(upload.file.size)}
+            {formatBytes(upload.originalSizeIBytes)}
           </span>
           <div className={stylesheet.dot} />
           <span>
             {12}
-            <span className={stylesheet.progressRatio}>95%</span>
+            <span className={stylesheet.progressRatio}>{progress}%</span>
           </span>
           <div className={stylesheet.dot} />
           {renderUploadStatus()}
@@ -80,7 +80,8 @@ export function UploadItem({ upload, uploadId }: UploadItemProps) {
         <Progress.Indicator
           className={stylesheet.progressFill}
           style={{
-            width: upload.status === UploadStatus.PROGRESS ? '43%' : '100%',
+            width:
+              upload.status === UploadStatus.PROGRESS ? `${progress}%` : '100%',
           }}
         />
       </Progress.Root>

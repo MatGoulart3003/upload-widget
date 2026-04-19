@@ -5,7 +5,7 @@ import { UploadItem } from '../UploadItem/UploadItem'
 const stylesheet = {
   container: 'px-3 flex flex-col gap-3',
   noUploadsSpan: 'text-sm text-zinc-400',
-  listMap: 'flex flex-col gap-2',
+  listMap: 'flex flex-col gap-2 h-[200px] overflow-x-auto',
 }
 
 const ANIMATION_VARIANTS = {
@@ -40,7 +40,7 @@ export function List() {
       className={stylesheet.container}
     >
       <span>
-        Uploaded files <span>{3}</span>
+        Uploaded files <span>{uploads.size}</span>
       </span>
       {renderUploadListContent()}
     </motion.div>

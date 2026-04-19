@@ -1,5 +1,6 @@
 import * as Collapsible from '@radix-ui/react-collapsible'
 import { motion, type Variants } from 'motion/react'
+import { usePendingUploads } from '../../store/uploads'
 import { Dropzone } from './components/Dropzone/Dropzone'
 import { Header } from './components/Header/Header'
 import { List } from './components/List/List'
@@ -30,14 +31,14 @@ const ANIMATION_VARIANTS = {
 } as Variants
 
 export function UploadWidget() {
-  const isThereAnyPendingUpload = false
+  const { isThereAnyPendingUploads } = usePendingUploads()
 
   const { isOpen, handleIsOpenChange } = useUploadWidget()
 
   return (
     <Collapsible.Root onOpenChange={handleIsOpenChange} asChild>
       <motion.div
-        data-progress={isThereAnyPendingUpload}
+        data-progress={isThereAnyPendingUploads}
         animate={isOpen ? 'open' : 'closed'}
         variants={ANIMATION_VARIANTS}
         className={stylesheet.container}
