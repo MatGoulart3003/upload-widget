@@ -5,20 +5,23 @@ import type { UploadWithId } from '../../../../../models/uploadWithId'
 import {
   type Upload,
   UploadStatus,
+  usePendingUploads,
   useUploads,
 } from '../../../../../store/uploads'
 import { calculateProgress } from '../../../../../utils/calculateProgress'
+import { downloadUrl } from '../../../../../utils/dowloadUrl'
 
 export function useUploadItem(uploadWithId: UploadWithId) {
   const cancelUpload = useUploads(state => state.cancelUpload)
+  const retryUpload = useUploads(state => state.retryUpload)
+  const { globalPercentage } = usePendingUploads()
 
   const buttonsData = [
     {
       icon: HiOutlineDownload,
       ariaLabel: 'Download compressed image',
       isDisplayed: true,
-      onClick: undefined,
-      href: uploadWithId.remoteUrl,
+      onClick: () => downloadUrl(uploadWithId.remoteUrl ?? ''),
       isDisabled: uploadWithId.status !== UploadStatus.SUCCESS,
     },
     {
@@ -33,7 +36,7 @@ export function useUploadItem(uploadWithId: UploadWithId) {
       icon: FiRefreshCcw,
       ariaLabel: 'Retry upload',
       isDisplayed: true,
-      onClick: undefined,
+      onClick: () => retryUpload(uploadWithId.uploadId),
       isDisabled: ![UploadStatus.CANCELED, UploadStatus.ERROR].includes(
         uploadWithId.status,
       ),
@@ -57,7 +60,7 @@ export function useUploadItem(uploadWithId: UploadWithId) {
     (upload: Upload) => StatusDisplay
   > = {
     [UploadStatus.PROGRESS]: () => ({
-      label: `${45}%`,
+      label: `${globalPercentage}%`,
     }),
     [UploadStatus.ERROR]: () => ({
       label: 'Error',

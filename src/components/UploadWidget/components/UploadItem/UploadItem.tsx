@@ -104,14 +104,11 @@ export function UploadItem({ upload, uploadId }: UploadItemProps) {
               key={button.ariaLabel}
               size="icon-sm"
               disabled={button.isDisabled}
-              asChild={!!button.href}
             >
-              <a href={button.href}>
-                <button.icon />
-                <span className={stylesheet.accessibilityText}>
-                  {button.ariaLabel}
-                </span>
-              </a>
+              <button.icon />
+              <span className={stylesheet.accessibilityText}>
+                {button.ariaLabel}
+              </span>
             </Button>
           ) : null,
         )}
