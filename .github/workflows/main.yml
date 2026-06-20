@@ -42,11 +42,11 @@ jobs:
 
       - name: Sync files to S3 static
         id: sync-files-to-s3-static
-        run: aws s3 sync ${{ vars.SOURCE_DIST }} s3://${{ vars.CLOUDFRONT_BUCKET_NAME }}  --delete
-
+        run: aws s3 sync ${{ vars.SOURCE_DIST }} s3://${{ vars.STATIC_BUCKET_NAME }}  --delete
+        
       - name: Sync files to S3 CloudFront
         id: sync-files-to-s3-cdn
-        run: aws s3 sync ${{ vars.SOURCE_DIST }} s3://${{ secrets.STATIC_BUCKET_NAME }}  --delete
+        run: aws s3 sync ${{ vars.SOURCE_DIST }} s3://${{ vars.CLOUDFRONT_BUCKET_NAME }}  --delete
           
       - name: Invalidate CloudFront cache
         id: invalidate-cloudfront-cache
