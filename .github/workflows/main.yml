@@ -40,4 +40,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Sync files to S3
+        id: sync-files-to-s3
+        run: aws s3 sync ./dist s3://${{ secrets.S3_BUCKET_NAME }}  --delete
           
